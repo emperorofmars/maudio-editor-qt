@@ -33,7 +33,17 @@ include_directories(${MAUDIO_EDITOR_TEST_DIR})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wl,--no-as-needed")
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH "./res/lib:.")
-#[[
+
+#qt5 stuff
+find_package(Qt5Widgets REQUIRED)
+#set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTOUIC ON)
+#set(CMAKE_AUTORCC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+include_directories(${Qt5Widgets_INCLUDES})
+add_definitions(${Qt5Widgets_DEFINITIONS})
+
 #set preprocessor variables for version and commit hash
 if(EXISTS "${PROJECT_SOURCE_DIR}/.git/HEAD")
 	execute_process(
@@ -71,13 +81,23 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/.git/HEAD")
 else()
 	message(WARNING "Couldn't retrieve version information from git!")
 endif()
-]]
+
 set(MAUDIO_EDITOR_SOURCE_FILES
 	${PROJECT_SOURCE_DIR}/src/main.cpp
+	${PROJECT_SOURCE_DIR}/src/mainwindow.cpp
+)
+
+qt5_wrap_cpp(EDITOR_QT5_SRC
+	${PROJECT_SOURCE_DIR}/include/mainwindow.hpp
+)
+
+qt5_wrap_ui(EDITOR_QT5_UI
+	${PROJECT_SOURCE_DIR}/ui/mainwindow.ui
 )
 
 #example binary
-add_executable(maudio_editor ${MAUDIO_EDITOR_SOURCE_FILES})
+add_executable(maudio_editor ${MAUDIO_EDITOR_SOURCE_FILES} ${EDITOR_QT5_SRC} ${EDITOR_QT5_UI})
+target_link_libraries(maudio_editor ${Qt5Widgets_LIBRARIES})
 
 if(${MAUDIO_PARENT_PROJECT} EQUAL 0)
 	target_link_libraries(maudio_editor -lmaudio)
