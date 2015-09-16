@@ -1,0 +1,5 @@
+.directory
+build
+deploy
+CMakeLists.txt.user
+.kdev
