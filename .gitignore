@@ -1,5 +1,6 @@
 .directory
 build
 deploy
+maudio-editor-qt.pro.user
 CMakeLists.txt.user
 .kdev

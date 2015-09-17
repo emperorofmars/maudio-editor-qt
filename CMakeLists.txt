@@ -89,7 +89,7 @@ set(MAUDIO_EDITOR_SOURCE_FILES
 )
 
 qt5_wrap_cpp(EDITOR_QT5_SRC
-	${PROJECT_SOURCE_DIR}/include/mainwindow.hpp
+	${PROJECT_SOURCE_DIR}/include/mainwindow.h
 )
 
 qt5_wrap_ui(EDITOR_QT5_UI
