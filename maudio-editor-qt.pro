@@ -11,6 +11,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = maudio-editor-qt
 TEMPLATE = app
 
+QMAKE_CXXFLAGS += -std=c++11
+
+LIBS += -lmaudio
+
 INCLUDEPATH += $$PWD/src
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/ui
