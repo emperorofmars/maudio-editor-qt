@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this, SLOT(close()));
+    mProjectView = ui->MainTabBar;
 }
 
 MainWindow::~MainWindow()
@@ -21,45 +22,68 @@ MainWindow::~MainWindow()
 
 bool MainWindow::saveOnDanger(bool onExit)
 {
-    bool success = true;
     bool returnVal = true;
 
-    if(!mProject) return returnVal;
+    auto project = mProjectView->getProject();
+    if(!project) return returnVal;
 
-    do{
-        QMessageBox msg;
-        msg.setWindowTitle("Save File?");
-        msg.setText("You have unsaved changes.");
-        msg.setInformativeText("Do you want to save your changes?");
-        QMessageBox::StandardButtons btns = QMessageBox::Save | QMessageBox::Discard;
-        if(!onExit) btns |= QMessageBox::Cancel;
-        msg.setStandardButtons(btns);
-        msg.setDefaultButton(QMessageBox::Save);
-        int ret = msg.exec();
-        switch(ret){
-            case QMessageBox::Save:
-            {
-                QString file = QFileDialog::getSaveFileName(this, tr("Save Project As"), QDir::homePath(), tr("MAudio Project Files (*.maup);;All FIles (*)"));
-                mProject->setSaveFile(file.toStdString().c_str());
-                try{
-                    mProject->save();
+    QMessageBox msg;
+    msg.setWindowTitle("Save File?");
+    msg.setText("You have unsaved changes.");
+    msg.setInformativeText("Do you want to save your changes?");
+    QMessageBox::StandardButtons btns = QMessageBox::Save | QMessageBox::Discard;
+    if(!onExit) btns |= QMessageBox::Cancel;
+    msg.setStandardButtons(btns);
+    msg.setDefaultButton(QMessageBox::Save);
+    int ret = msg.exec();
+    switch(ret){
+        case QMessageBox::Save:
+        {
+            bool success = true;
+            do{
+                if(!saveDialog()){
+                    int ret2 = QMessageBox::warning(this, tr("Saveing failed!"), tr("Do you want to try again?"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
+                    if(ret2 == QMessageBox::Ok) success = false;
+                    else{
+                        returnVal = false;
+                        success = true;
+                    }
                 }
-                catch(std::exception &e){
-                    int ret2 = QMessageBox::warning(this, tr("Saveing failed!"), tr("Do you want to try again?"), QMessageBox::Accepted | QMessageBox::Cancel, QMessageBox::Accepted);
-                    if(ret2 == QMessageBox::Accepted) success = false;
-                }
-                break;
             }
-            case QMessageBox::Cancel:
-            {
-                returnVal = false;
-                break;
-            }
+            while(!success);
+            break;
+        }
+        case QMessageBox::Cancel:
+        {
+            returnVal = false;
+            break;
         }
     }
-    while(!success);
 
     return returnVal;
+}
+
+bool MainWindow::saveDialog()
+{
+    auto project = mProjectView->getProject();
+    if(!project) return false;
+
+    bool ret = true;
+
+    QString startpath = mSaveLocation;
+    if(startpath == QString()) startpath = QDir::homePath();
+    QString file = QFileDialog::getSaveFileName(this, tr("Save Project As"), startpath, tr("MAudio Project Files (*.maup);;All FIles (*)"));
+    if(file == QString()) return false;
+
+    project->setSaveFile(file.toStdString().c_str());
+    try{
+        project->save();
+        mSaveLocation = file;
+    }
+    catch(std::exception &e){
+        ret = false;
+    }
+    return ret;
 }
 
 void MainWindow::onProjectOpened()
@@ -68,6 +92,7 @@ void MainWindow::onProjectOpened()
     ui->actionSave_As->setEnabled(true);
     ui->actionSave->setEnabled(true);
     ui->actionAdd_Scene->setEnabled(true);
+    ui->actionAdd_Node->setEnabled(true);
 }
 
 void MainWindow::onProjectClosed()
@@ -82,37 +107,59 @@ void MainWindow::onProjectClosed()
 void MainWindow::on_actionNew_Project_triggered()
 {
     if(!saveOnDanger()) return;
-    mProject.reset(new maudio::Project("New_Project"));
+    std::shared_ptr<maudio::Project> project(new maudio::Project("New_Project"));
+    mProjectView->setProject(project);
 
     onProjectOpened();
-    this->setWindowTitle(tr("MAudio Editor: ") + QString(mProject->getName()));
+    this->setWindowTitle(tr("MAudio Editor: ") + QString(project->getName()));
     statusBar()->showMessage(tr("New project created."));
 }
 
 void MainWindow::on_actionOpen_Project_triggered()
 {
     if(!saveOnDanger()) return;
-    mProject.reset(new maudio::Project());
+    std::shared_ptr<maudio::Project> project(new maudio::Project());
+
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Project"), QDir::homePath(), tr("MAudio Project Files (*.maup);;All FIles (*)"));
-    mProject->load(fileName.toStdString().c_str());
+    project->load(fileName.toStdString().c_str());
+    mProjectView->setProject(project);
+
+    mSaveLocation = fileName;
 
     onProjectOpened();
-    this->setWindowTitle(tr("MAudio Editor: ") + QString(mProject->getName()));
+    this->setWindowTitle(tr("MAudio Editor: ") + QString(project->getName()));
     statusBar()->showMessage(tr("Project \"") + fileName + tr("\" successfully loaded."));
 }
 
 void MainWindow::on_actionAdd_Scene_triggered()
 {
-    std::shared_ptr<maudio::Scene> scene(new maudio::Scene());
-    mProject->addScene(scene);
-    QWidget *tab = new QWidget(ui->tabWidget);
-    ui->tabWidget->addTab(tab, QIcon(), tr("1: ") + QString(scene->getName()));
-    ui->actionAdd_Node->setEnabled(true);
-
+    mProjectView->on_add_scene();
     statusBar()->showMessage(tr("Added scene"));
 }
 
 void MainWindow::on_actionAdd_Node_triggered()
 {
+    mProjectView->on_add_node();
+    statusBar()->showMessage(tr("Added Node"));
+}
 
+void MainWindow::on_actionDelete_Scene_triggered()
+{
+    mProjectView->on_remove_current_scene();
+    statusBar()->showMessage(tr("Removed scene"));
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+    if(mSaveLocation == QString()) saveDialog();
+    else{
+        auto project = mProjectView->getProject();
+        if(!project) return;
+        project->save();
+    }
+}
+
+void MainWindow::on_actionSave_As_triggered()
+{
+    saveDialog();
 }

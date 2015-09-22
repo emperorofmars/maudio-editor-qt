@@ -28,25 +28,25 @@
      <number>4</number>
     </property>
     <item row="0" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="mainVerticalLayout">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
+       <layout class="QHBoxLayout" name="ToolBar">
         <item>
-         <widget class="QPushButton" name="pushButton_4">
+         <widget class="QPushButton" name="buttonAddScene">
           <property name="text">
            <string>Add Scene</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="buttonAddNode">
           <property name="text">
            <string>Add Node</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="buttonDeleteNode">
           <property name="text">
            <string>Delete Node</string>
           </property>
@@ -68,9 +68,9 @@
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QHBoxLayout" name="MainArea">
         <item>
-         <widget class="QTabWidget" name="tabWidget">
+         <widget class="MAudioMainWidget" name="MainTabBar">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>0</horstretch>
@@ -101,7 +101,7 @@
           <property name="movable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="tab">
+          <widget class="QWidget" name="WelcomeTab">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -114,6 +114,19 @@
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="2" column="0">
              <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="0">
+             <spacer name="verticalSpacer_2">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
               </property>
@@ -213,33 +226,10 @@
               </item>
              </layout>
             </item>
-            <item row="0" column="0">
-             <spacer name="verticalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
            </layout>
-           <zorder>label</zorder>
-           <zorder>label_2</zorder>
-           <zorder>label_2</zorder>
-           <zorder>label</zorder>
-           <zorder>splitter_2</zorder>
-           <zorder>splitter</zorder>
-           <zorder></zorder>
-           <zorder>horizontalSpacer_2</zorder>
-           <zorder>horizontalSpacer_3</zorder>
-           <zorder>horizontalSpacer_4</zorder>
-           <zorder>horizontalSpacer_5</zorder>
            <zorder>verticalSpacer</zorder>
            <zorder>verticalSpacer_2</zorder>
+           <zorder></zorder>
           </widget>
          </widget>
         </item>
@@ -281,7 +271,6 @@
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
-    <addaction name="separator"/>
     <addaction name="actionHelp"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -290,6 +279,8 @@
     </property>
     <addaction name="actionAdd_Scene"/>
     <addaction name="actionAdd_Node"/>
+    <addaction name="actionDelete_Scene"/>
+    <addaction name="actionDelete_Node"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -389,8 +380,63 @@
     <string>Project Settings</string>
    </property>
   </action>
+  <action name="actionDelete_Scene">
+   <property name="text">
+    <string>Delete Current Scene</string>
+   </property>
+  </action>
+  <action name="actionDelete_Node">
+   <property name="text">
+    <string>Delete Node</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>MAudioMainWidget</class>
+   <extends>QTabWidget</extends>
+   <header>maudiomainwidget.h</header>
+   <container>1</container>
+   <slots>
+    <slot>on_add_scene()</slot>
+    <slot>on_add_node()</slot>
+   </slots>
+  </customwidget>
+ </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>buttonAddScene</sender>
+   <signal>clicked()</signal>
+   <receiver>MainTabBar</receiver>
+   <slot>on_add_scene()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>55</x>
+     <y>36</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>164</x>
+     <y>122</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonAddNode</sender>
+   <signal>clicked()</signal>
+   <receiver>MainTabBar</receiver>
+   <slot>on_add_node()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>124</x>
+     <y>39</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>134</x>
+     <y>111</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

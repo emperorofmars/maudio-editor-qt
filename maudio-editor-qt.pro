@@ -20,8 +20,10 @@ INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/ui
 
 SOURCES += src/main.cpp\
-        src/mainwindow.cpp
+        src/mainwindow.cpp \
+    src/maudiomainwidget.cpp
 
-HEADERS  += include/mainwindow.h
+HEADERS  += include/mainwindow.h \
+    include/maudiomainwidget.h
 
 FORMS    += ui/mainwindow.ui

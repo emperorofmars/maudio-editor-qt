@@ -86,10 +86,12 @@ endif()
 set(MAUDIO_EDITOR_SOURCE_FILES
 	${PROJECT_SOURCE_DIR}/src/main.cpp
 	${PROJECT_SOURCE_DIR}/src/mainwindow.cpp
+	${PROJECT_SOURCE_DIR}/src/maudiomainwidget.cpp
 )
 
 qt5_wrap_cpp(EDITOR_QT5_SRC
 	${PROJECT_SOURCE_DIR}/include/mainwindow.h
+	${PROJECT_SOURCE_DIR}/include/maudiomainwidget.h
 )
 
 qt5_wrap_ui(EDITOR_QT5_UI

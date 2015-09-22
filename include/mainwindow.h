@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "maudio/scene/Project.hpp"
+#include "maudiomainwidget.h"
 #include <QMainWindow>
 #include <memory>
 
@@ -18,6 +19,7 @@ public:
     ~MainWindow();
 
     bool saveOnDanger(bool onExit = false);
+    bool saveDialog();
 
 private slots:
     void on_actionNew_Project_triggered();
@@ -28,13 +30,20 @@ private slots:
 
     void on_actionAdd_Node_triggered();
 
+    void on_actionDelete_Scene_triggered();
+
+    void on_actionSave_triggered();
+
+    void on_actionSave_As_triggered();
+
 private:
     void onProjectOpened();
     void onProjectClosed();
 
     Ui::MainWindow *ui;
 
-    std::shared_ptr<maudio::Project> mProject;
+    MAudioMainWidget *mProjectView = NULL;
+    QString mSaveLocation;
 };
 
 #endif // MAINWINDOW_H
