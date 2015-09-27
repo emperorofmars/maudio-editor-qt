@@ -1,3 +1,9 @@
+/*
+ * Project Maudio-Editor-Qt
+ * Copyright (C) 2015 Martin Schwarz
+ * See LICENSE.txt for the full license
+ */
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -35,6 +41,8 @@ private slots:
     void on_actionSave_triggered();
 
     void on_actionSave_As_triggered();
+
+    void on_actionQuit_triggered();
 
 private:
     void onProjectOpened();

@@ -87,19 +87,21 @@ set(MAUDIO_EDITOR_SOURCE_FILES
 	${PROJECT_SOURCE_DIR}/src/main.cpp
 	${PROJECT_SOURCE_DIR}/src/mainwindow.cpp
 	${PROJECT_SOURCE_DIR}/src/maudiomainwidget.cpp
+	${PROJECT_SOURCE_DIR}/src/maudiosceneview.cpp
 )
 
-qt5_wrap_cpp(EDITOR_QT5_SRC
+qt5_wrap_cpp(EDITOR_QT_SRC
 	${PROJECT_SOURCE_DIR}/include/mainwindow.h
 	${PROJECT_SOURCE_DIR}/include/maudiomainwidget.h
+	${PROJECT_SOURCE_DIR}/include/maudiosceneview.h
 )
 
-qt5_wrap_ui(EDITOR_QT5_UI
+qt5_wrap_ui(EDITOR_QT_UI
 	${PROJECT_SOURCE_DIR}/ui/mainwindow.ui
 )
 
 #example binary
-add_executable(maudio_editor ${MAUDIO_EDITOR_SOURCE_FILES} ${EDITOR_QT5_SRC} ${EDITOR_QT5_UI})
+add_executable(maudio_editor ${MAUDIO_EDITOR_SOURCE_FILES} ${EDITOR_QT_SRC} ${EDITOR_QT_UI})
 target_link_libraries(maudio_editor ${Qt5Widgets_LIBRARIES})
 
 if(${MAUDIO_PARENT_PROJECT} EQUAL 0)

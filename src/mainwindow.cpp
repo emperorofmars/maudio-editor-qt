@@ -1,3 +1,9 @@
+/*
+ * Project Maudio-Editor-Qt
+ * Copyright (C) 2015 Martin Schwarz
+ * See LICENSE.txt for the full license
+ */
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
@@ -10,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this, SLOT(close()));
     mProjectView = ui->MainTabBar;
 }
 
@@ -26,6 +31,7 @@ bool MainWindow::saveOnDanger(bool onExit)
 
     auto project = mProjectView->getProject();
     if(!project) return returnVal;
+    if(!mProjectView->getModified()) return returnVal;
 
     QMessageBox msg;
     msg.setWindowTitle("Save File?");
@@ -83,6 +89,8 @@ bool MainWindow::saveDialog()
     catch(std::exception &e){
         ret = false;
     }
+
+    if(ret) mProjectView->setSaved();
     return ret;
 }
 
@@ -93,6 +101,9 @@ void MainWindow::onProjectOpened()
     ui->actionSave->setEnabled(true);
     ui->actionAdd_Scene->setEnabled(true);
     ui->actionAdd_Node->setEnabled(true);
+    ui->buttonAddNode->setEnabled(true);
+    ui->buttonAddScene->setEnabled(true);
+    ui->buttonDeleteNode->setEnabled(true);
 }
 
 void MainWindow::onProjectClosed()
@@ -102,6 +113,9 @@ void MainWindow::onProjectClosed()
     ui->actionSave->setEnabled(false);
     ui->actionAdd_Scene->setEnabled(false);
     ui->actionAdd_Node->setEnabled(false);
+    ui->buttonAddNode->setEnabled(false);
+    ui->buttonAddScene->setEnabled(false);
+    ui->buttonDeleteNode->setEnabled(false);
 }
 
 void MainWindow::on_actionNew_Project_triggered()
@@ -121,6 +135,7 @@ void MainWindow::on_actionOpen_Project_triggered()
     std::shared_ptr<maudio::Project> project(new maudio::Project());
 
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Project"), QDir::homePath(), tr("MAudio Project Files (*.maup);;All FIles (*)"));
+    if(fileName == QString()) return;
     project->load(fileName.toStdString().c_str());
     mProjectView->setProject(project);
 
@@ -162,4 +177,9 @@ void MainWindow::on_actionSave_triggered()
 void MainWindow::on_actionSave_As_triggered()
 {
     saveDialog();
+}
+
+void MainWindow::on_actionQuit_triggered()
+{
+    close();
 }

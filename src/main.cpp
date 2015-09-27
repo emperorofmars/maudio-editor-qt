@@ -1,3 +1,9 @@
+/*
+ * Project Maudio-Editor-Qt
+ * Copyright (C) 2015 Martin Schwarz
+ * See LICENSE.txt for the full license
+ */
+
 #include "mainwindow.h"
 #include <QApplication>
 
